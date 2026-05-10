@@ -8,7 +8,10 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const threads = await listSessionThreads();
-    const activeThreadToken = getCurrentThreadToken() ?? threads[0]?.threadToken ?? null;
+    const currentThreadToken = getCurrentThreadToken();
+    const activeThreadToken = threads.some((thread) => thread.threadToken === currentThreadToken)
+      ? currentThreadToken
+      : threads[0]?.threadToken ?? null;
 
     const body: ChatThreadsResponse = {
       activeThreadToken,
