@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>속마음 번역기 — 해커톤 피치덱</title>
+
+  <!--
+    ============================================================
+    DECK: 속마음 번역기 (Inner-Thoughts Translator) Pitch
+    STYLE: Creative Voltage — electric blue + neon yellow on dark
+    SLIDES: 12
+    EDITING: ENABLED — hover top-left or press E to enter edit mode,
+             click any text to edit, Ctrl+S to export the edited file.
+             Auto-saves to localStorage between sessions.
+    ============================================================
+  -->
+
+  <!-- Fonts: Syne (display) + Space Mono (mono accent) — Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       1. CSS CUSTOM PROPERTIES — change colors/fonts here once
+          to retheme the entire deck.
+       ============================================================ */
+    :root {
+      /* Creative Voltage palette */
+      --bg-primary: #0066ff;     /* Electric blue (panel, accents)   */
+      --bg-dark: #0d0d1a;        /* Near-black backdrop              */
+      --bg-deep: #07070f;        /* Deepest layer for atmosphere     */
+      --accent-neon: #d4ff00;    /* Neon yellow (highlights, CTA)    */
+      --accent-coral: #ff5757;   /* Coral (emotion / warmth tag)     */
+      --text-light: #ffffff;
+      --text-dim: #9aa3b8;
+      --ink: #07070f;
+
+      /* Typography (override clamp values from viewport-base.css) */
+      --font-display: "Syne", system-ui, sans-serif;
+      --font-mono: "Space Mono", ui-monospace, monospace;
+
+      --title-size: clamp(1.5rem, 5vw, 4rem);
+      --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+      --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+      --body-size: clamp(0.78rem, 1.5vw, 1.125rem);
+      --small-size: clamp(0.65rem, 1vw, 0.875rem);
+      --slide-padding: clamp(1rem, 4vw, 4rem);
+      --content-gap: clamp(0.5rem, 2vw, 2rem);
+      --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-normal: 0.7s;
+    }
+
+    /* ============================================================
+       2. VIEWPORT BASE (verbatim from frontend-slides/viewport-base.css)
+          DO NOT remove — guarantees 100vh fit + responsive scaling.
+       ============================================================ */
+    html, body { height: 100%; overflow-x: hidden; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      overflow: hidden; scroll-snap-align: start;
+      display: flex; flex-direction: column; position: relative;
+    }
+    .slide-content {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; max-height: 100%;
+      overflow: hidden; padding: var(--slide-padding);
+    }
+    .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+    .feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+    .feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.4; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+      gap: clamp(0.5rem, 1.5vw, 1rem);
+    }
+    img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+
+    @media (max-height: 700px) {
+      :root {
+        --slide-padding: clamp(0.75rem, 3vw, 2rem);
+        --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+        --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+        --h2-size: clamp(1rem, 3vw, 1.75rem);
+      }
+    }
+    @media (max-height: 600px) {
+      :root {
+        --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+        --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+        --title-size: clamp(1.1rem, 4vw, 2rem);
+        --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+      }
+      .nav-dots, .keyboard-hint, .decorative { display: none; }
+    }
+    @media (max-height: 500px) {
+      :root {
+        --slide-padding: clamp(0.4rem, 2vw, 1rem);
+        --title-size: clamp(1rem, 3.5vw, 1.5rem);
+        --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        --body-size: clamp(0.65rem, 1vw, 0.85rem);
+      }
+    }
+    @media (max-width: 600px) {
+      :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+      .grid { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+      html { scroll-behavior: auto; }
+    }
+
+    /* ============================================================
+       3. RESET + GLOBAL STYLES
+       ============================================================ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: var(--bg-deep); color: var(--text-light); -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-mono); }
+
+    /* All slides get the dark base + subtle blue radial atmosphere. */
+    .slide {
+      background:
+        radial-gradient(ellipse at 80% 18%, rgba(0, 102, 255, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 12% 90%, rgba(212, 255, 0, 0.08) 0%, transparent 55%),
+        var(--bg-dark);
+    }
+    /* Subtle grid overlay on every slide (depth/structure). */
+    .slide::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(212, 255, 0, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 255, 0, 0.045) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse at center, #000 35%, transparent 90%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ============================================================
+       4. ENTRANCE ANIMATIONS (.reveal triggered by IntersectionObserver)
+       ============================================================ */
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity var(--duration-normal) var(--ease-out-expo),
+                  transform var(--duration-normal) var(--ease-out-expo);
+    }
+    .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+    /* Staggered delays — applied per-slide via .d1..d8 helpers. */
+    .slide.visible .d1 { transition-delay: 0.05s; }
+    .slide.visible .d2 { transition-delay: 0.16s; }
+    .slide.visible .d3 { transition-delay: 0.28s; }
+    .slide.visible .d4 { transition-delay: 0.40s; }
+    .slide.visible .d5 { transition-delay: 0.52s; }
+    .slide.visible .d6 { transition-delay: 0.64s; }
+    .slide.visible .d7 { transition-delay: 0.76s; }
+    .slide.visible .d8 { transition-delay: 0.88s; }
+
+    /* Scale-in variant for cards */
+    .reveal-pop {
+      opacity: 0; transform: scale(0.94);
+      transition: opacity var(--duration-normal) var(--ease-out-expo),
+                  transform var(--duration-normal) cubic-bezier(0.18, 0.9, 0.32, 1.1);
+    }
+    .slide.visible .reveal-pop { opacity: 1; transform: scale(1); }
+
+    /* ============================================================
+       5. SHARED COMPONENTS
+       ============================================================ */
+    .brand {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-family: var(--font-mono); font-size: var(--small-size);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--text-light); position: relative; z-index: 2;
+    }
+    .brand-dot {
+      width: 0.6rem; height: 0.6rem; border-radius: 50%;
+      background: var(--accent-neon);
+      box-shadow: 0 0 14px var(--accent-neon);
+    }
+    .brand img.logo {
+      width: clamp(28px, 3vw, 40px); height: auto;
+      filter: brightness(0) invert(1);
+    }
+
+    .kicker {
+      font-family: var(--font-mono); font-size: var(--small-size);
+      letter-spacing: 0.32em; text-transform: uppercase; opacity: 0.85;
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      color: var(--text-light); position: relative; z-index: 2;
+    }
+    .kicker .bar {
+      width: 2.4rem; height: 1px;
+      background: rgba(255, 255, 255, 0.6);
+    }
+    .kicker.neon { color: var(--accent-neon); }
+    .kicker.neon .bar { background: var(--accent-neon); box-shadow: 0 0 6px var(--accent-neon); }
+
+    .meta {
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: var(--font-mono); font-size: var(--small-size);
+      opacity: 0.7; letter-spacing: 0.14em; text-transform: uppercase;
+      position: relative; z-index: 2;
+    }
+    .meta .num { color: var(--accent-neon); font-weight: 700; opacity: 1; }
+
+    /* Halftone-dot texture used on bold colored panels */
+    .halftone {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1.4px, transparent 1.5px);
+      background-size: 18px 18px;
+      mask-image: linear-gradient(135deg, #000 30%, transparent 80%);
+    }
+
+    /* ============================================================
+       6. PROGRESS BAR + NAV DOTS
+       ============================================================ */
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: var(--accent-neon);
+      box-shadow: 0 0 12px var(--accent-neon);
+      z-index: 9999; transition: width 0.2s linear;
+    }
+    .nav-dots {
+      position: fixed; right: clamp(0.6rem, 2vw, 1.2rem); top: 50%;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 0.5rem;
+      z-index: 9998;
+    }
+    .nav-dots button {
+      width: 8px; height: 8px; border: 0; padding: 0;
+      border-radius: 50%; background: rgba(255, 255, 255, 0.25);
+      cursor: pointer; transition: background 0.2s, transform 0.2s;
+    }
+    .nav-dots button.active {
+      background: var(--accent-neon);
+      transform: scale(1.4);
+      box-shadow: 0 0 8px var(--accent-neon);
+    }
+    .nav-dots button:hover { background: rgba(255, 255, 255, 0.6); }
+    .keyboard-hint {
+      position: fixed; bottom: 0.8rem; right: 1rem;
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--text-dim); z-index: 9998;
+      opacity: 0.6;
+    }
+
+    /* ============================================================
+       7. INLINE EDITING UI (opt-in feature, JS-controlled visibility)
+       ============================================================ */
+    .edit-hotzone {
+      position: fixed; top: 0; left: 0; width: 80px; height: 80px;
+      z-index: 10000; cursor: pointer;
+    }
+    .edit-toggle {
+      position: fixed; top: 14px; left: 14px;
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid var(--accent-neon);
+      background: var(--bg-dark); color: var(--accent-neon);
+      font-size: 18px; cursor: pointer; z-index: 10001;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    .edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+    .edit-toggle:hover { transform: scale(1.08); }
+    .edit-toggle.active {
+      background: var(--accent-neon); color: var(--ink); border-color: var(--accent-neon);
+    }
+    .edit-banner {
+      position: fixed; top: 14px; left: 70px;
+      background: var(--accent-neon); color: var(--ink);
+      padding: 0.5rem 0.85rem; border-radius: 8px;
+      font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.6rem;
+      opacity: 0; pointer-events: none; z-index: 10001;
+      transition: opacity 0.3s ease;
+    }
+    .edit-banner.active { opacity: 1; pointer-events: auto; }
+    .edit-banner button {
+      background: var(--ink); color: var(--accent-neon);
+      border: 0; padding: 0.3rem 0.6rem; border-radius: 4px;
+      font-family: inherit; font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.1em; cursor: pointer;
+    }
+    body.edit-active [contenteditable="true"] {
+      outline: 1px dashed var(--accent-neon);
+      outline-offset: 4px; border-radius: 2px;
+    }
+    body.edit-active [contenteditable="true"]:focus {
+      outline: 2px solid var(--accent-neon);
+      background: rgba(212, 255, 0, 0.06);
+    }
+
+    /* ============================================================
+       8. LAYOUTS — common slide patterns
+       ============================================================ */
+
+    /* --- Split panel (used by title + several content slides) --- */
+    .split {
+      display: grid; grid-template-columns: 55% 45%;
+      width: 100%; height: 100%;
+    }
+    .split .panel {
+      padding: var(--slide-padding);
+      display: flex; flex-direction: column; justify-content: space-between;
+      position: relative; overflow: hidden;
+    }
+    .split .panel.blue {
+      background: var(--bg-primary);
+      color: var(--text-light);
+    }
+    .split .panel.blue::before { /* halftone over blue */
+      content: ""; position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.16) 1.3px, transparent 1.4px);
+      background-size: 18px 18px;
+      mask-image: linear-gradient(135deg, #000 30%, transparent 85%);
+      pointer-events: none;
+    }
+    @media (max-width: 780px) {
+      .split { grid-template-columns: 1fr; grid-template-rows: 55% 45%; }
+    }
+
+    /* --- Centered single-column layout --- */
+    .center {
+      display: flex; flex-direction: column;
+      justify-content: space-between; padding: var(--slide-padding);
+      width: 100%; height: 100%;
+    }
+    .center .body {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; gap: clamp(0.7rem, 1.6vh, 1.4rem);
+      max-width: min(1100px, 92vw); margin: 0 auto; width: 100%;
+    }
+
+    /* ============================================================
+       9. TYPOGRAPHY HELPERS
+       ============================================================ */
+    .display {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(2.2rem, 6.5vw, 5.4rem);
+      line-height: 0.95; letter-spacing: -0.025em;
+    }
+    .display em { font-style: italic; font-weight: 700; color: var(--accent-neon); }
+    .h1 {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(1.8rem, 4.8vw, 3.6rem);
+      line-height: 1.05; letter-spacing: -0.02em;
+    }
+    .h1 em { font-style: italic; color: var(--accent-neon); font-weight: 700; }
+    .h2 {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1.3rem, 2.8vw, 2.1rem);
+      letter-spacing: -0.01em; line-height: 1.15;
+    }
+    .lead {
+      font-family: var(--font-mono); font-size: var(--body-size);
+      line-height: 1.55; max-width: 60ch; opacity: 0.92;
+    }
+    .lead strong { color: var(--accent-neon); font-weight: 700; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      background: var(--accent-neon); color: var(--ink);
+      padding: 0.5rem 0.85rem; border-radius: 999px;
+      font-family: var(--font-mono); font-size: var(--small-size);
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      align-self: flex-start; position: relative; z-index: 2;
+    }
+    .badge.outline {
+      background: transparent; color: var(--accent-neon);
+      border: 1px solid var(--accent-neon);
+    }
+    .badge.coral { background: var(--accent-coral); color: var(--text-light); }
+
+    /* ============================================================
+       10. FEATURE GRID (3-card row, slide 7 + 11)
+       ============================================================ */
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: clamp(0.7rem, 1.8vw, 1.4rem);
+      width: 100%;
+    }
+    .feature-card {
+      border: 1px solid rgba(212, 255, 0, 0.28);
+      background:
+        linear-gradient(180deg, rgba(212, 255, 0, 0.04), rgba(212, 255, 0, 0.01));
+      border-radius: 14px; padding: clamp(0.9rem, 1.8vw, 1.4rem);
+      display: flex; flex-direction: column; gap: 0.55rem;
+      min-height: clamp(140px, 22vh, 230px);
+    }
+    .feature-card .num {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(1.4rem, 2.6vw, 2rem); color: var(--accent-neon);
+      line-height: 1;
+    }
+    .feature-card h3 {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1rem, 1.7vw, 1.4rem); color: var(--text-light);
+    }
+    .feature-card p {
+      font-family: var(--font-mono); font-size: var(--small-size);
+      color: var(--text-dim); line-height: 1.5;
+    }
+    @media (max-width: 780px) {
+      .feature-grid { grid-template-columns: 1fr; gap: 0.6rem; }
+      .feature-card { min-height: auto; }
+    }
+
+    /* ============================================================
+       11. DEMO (CHAT) BUBBLES — slide 5 & 6
+       ============================================================ */
+    .chat {
+      display: flex; flex-direction: column; gap: 0.55rem;
+      max-width: min(560px, 90%);
+    }
+    .bubble {
+      padding: 0.65rem 0.95rem; border-radius: 14px;
+      font-family: var(--font-mono); font-size: var(--body-size);
+      line-height: 1.45; max-width: 100%;
+    }
+    .bubble.you {
+      background: var(--accent-neon); color: var(--ink);
+      align-self: flex-end; border-bottom-right-radius: 4px;
+      font-weight: 700;
+    }
+    .bubble.ai {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-light); border-bottom-left-radius: 4px;
+    }
+    .bubble.ai .label {
+      display: inline-block; font-family: var(--font-mono);
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent-neon); margin-bottom: 0.3rem;
+    }
+    .real-card {
+      margin-top: 0.4rem;
+      border: 1px solid rgba(212, 255, 0, 0.4);
+      background: rgba(212, 255, 0, 0.06);
+      border-radius: 12px; padding: 0.85rem 1rem;
+    }
+    .real-card .label {
+      display: inline-block; background: var(--accent-neon); color: var(--ink);
+      font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 0.2rem 0.55rem; border-radius: 999px; margin-bottom: 0.45rem;
+    }
+    .real-card p {
+      font-family: var(--font-display); font-style: italic; font-weight: 600;
+      font-size: var(--body-size); color: var(--accent-neon); line-height: 1.45;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.55rem; }
+    .tag {
+      background: rgba(255, 87, 87, 0.18); color: #ffb3b3;
+      border: 1px solid rgba(255, 87, 87, 0.4);
+      padding: 0.22rem 0.6rem; border-radius: 999px;
+      font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+    .tag.tip { background: rgba(0, 102, 255, 0.18); color: #c4daff; border-color: rgba(0, 102, 255, 0.55); }
+
+    /* ============================================================
+       12. CODE / JSON BLOCK (slide 5/6 right panel)
+       ============================================================ */
+    .code-block {
+      background: var(--bg-deep);
+      border: 1px solid rgba(212, 255, 0, 0.25);
+      border-radius: 12px; padding: 0.95rem 1.1rem;
+      font-family: var(--font-mono); font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+      line-height: 1.55; color: var(--text-dim);
+      white-space: pre; overflow: hidden;
+      max-width: 100%;
+    }
+    .code-block .key { color: var(--accent-neon); }
+    .code-block .str { color: #c4daff; }
+    .code-block .com { color: #6b7596; font-style: italic; }
+
+    /* ============================================================
+       13. ARCHITECTURE DIAGRAM (slide 9)
+       ============================================================ */
+    .arch {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: clamp(0.5rem, 1.2vw, 1rem);
+      align-items: stretch; width: 100%;
+    }
+    .arch-node {
+      border: 1px solid rgba(212, 255, 0, 0.3);
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px; padding: 0.85rem 0.9rem;
+      display: flex; flex-direction: column; gap: 0.3rem;
+      position: relative;
+    }
+    .arch-node .who {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent-neon); font-weight: 700;
+    }
+    .arch-node .what {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(0.85rem, 1.4vw, 1.05rem); color: var(--text-light);
+      line-height: 1.2;
+    }
+    .arch-node .how {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      color: var(--text-dim); line-height: 1.4;
+    }
+    .arch-node + .arch-node::before {
+      content: "→"; position: absolute; left: -0.95rem; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font-mono); font-size: 1.1rem;
+      color: var(--accent-neon);
+    }
+    @media (max-width: 780px) {
+      .arch { grid-template-columns: 1fr; }
+      .arch-node + .arch-node::before { content: "↓"; left: 50%; top: -0.95rem; transform: translateX(-50%); }
+    }
+
+    /* ============================================================
+       14. CLOSING (slide 12) — neon CTA
+       ============================================================ */
+    .cta-box {
+      border: 2px solid var(--accent-neon);
+      border-radius: 18px; padding: clamp(1rem, 2.2vw, 1.6rem) clamp(1.1rem, 2.4vw, 1.8rem);
+      display: flex; flex-direction: column; gap: 0.5rem;
+      max-width: min(560px, 90%); align-self: center;
+      background: rgba(212, 255, 0, 0.04);
+    }
+    .cta-box .cta-label {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-neon);
+    }
+    .cta-box .cta-url {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(1.1rem, 2.4vw, 1.8rem); color: var(--text-light);
+      letter-spacing: -0.01em;
+    }
+    .cta-box .cta-note {
+      font-family: var(--font-mono); font-size: var(--small-size);
+      color: var(--text-dim);
+    }
+
+    /* ============================================================
+       15. UTILITIES
+       ============================================================ */
+    .stack { display: flex; flex-direction: column; gap: clamp(0.5rem, 1.2vw, 1rem); }
+    .stack-tight { display: flex; flex-direction: column; gap: 0.4rem; }
+    .row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .pill {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.36rem 0.75rem; border-radius: 999px;
+      font-family: var(--font-mono); font-size: var(--small-size);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-light); background: rgba(255, 255, 255, 0.02);
+    }
+    .pill.neon { border-color: var(--accent-neon); color: var(--accent-neon); background: rgba(212, 255, 0, 0.05); }
+    .pill.coral { border-color: var(--accent-coral); color: #ffc8c8; background: rgba(255, 87, 87, 0.08); }
+
+    .compare {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(0.7rem, 1.8vw, 1.4rem);
+      width: 100%;
+    }
+    .compare .col {
+      border-radius: 12px; padding: clamp(0.9rem, 1.6vw, 1.3rem);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.02);
+      display: flex; flex-direction: column; gap: 0.45rem;
+    }
+    .compare .col.them h3 { color: var(--text-dim); }
+    .compare .col.us {
+      border-color: var(--accent-neon);
+      background: rgba(212, 255, 0, 0.05);
+    }
+    .compare h3 {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+    }
+    .compare .col.us h3 { color: var(--accent-neon); }
+    .compare ul { list-style: none; display: flex; flex-direction: column; gap: 0.35rem; }
+    .compare li {
+      font-family: var(--font-mono); font-size: var(--small-size);
+      line-height: 1.45; color: var(--text-light); opacity: 0.92;
+      display: flex; gap: 0.5rem;
+    }
+    .compare li::before { content: "—"; color: var(--accent-neon); }
+    .compare .col.them li::before { content: "·"; color: var(--text-dim); }
+
+    @media (max-width: 780px) {
+      .compare { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Progress bar (filled by JS as you scroll between slides) -->
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- Inline-edit UI (hidden by default; reveals via E key or top-left hover) -->
+  <div class="edit-hotzone" id="editHotzone" aria-hidden="true"></div>
+  <button class="edit-toggle" id="editToggle" title="Edit mode (E)" aria-label="Toggle edit mode">✏️</button>
+  <div class="edit-banner" id="editBanner">
+    <span>EDITING · Ctrl+S to export</span>
+    <button id="editExport" type="button">Export</button>
+  </div>
+
+  <!-- Navigation dots (filled by JS — one per slide) -->
+  <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+  <!-- ====== SLIDE 1 — TITLE ====== -->
+  <section class="slide" data-title="타이틀">
+    <div class="split">
+      <div class="panel blue">
+        <div class="brand reveal d1">
+          <span class="brand-dot"></span>
+          <span>속마음 번역기 · 2026</span>
+        </div>
+
+        <div class="stack">
+          <span class="kicker reveal d2"><span class="bar"></span>HACKERTHON · GYEONGSANG · AI</span>
+          <h1 class="display reveal d3">말로 못한<br/><em>마음을 옮기다</em></h1>
+          <p class="lead reveal d4">사투리 한 줄에 담긴 <strong>걱정·고마움·미안함</strong>을 AI가 해석하는 한국어 NLP 데모. 가족 사이의 거리를 좁히는 가장 짧은 다리.</p>
+        </div>
+
+        <span class="badge reveal d5">▶ Live demo · Pitch deck</span>
+      </div>
+
+      <div class="panel">
+        <div class="meta reveal d2">
+          <span>SLIDE</span><span class="num">01 / 12</span>
+        </div>
+        <img src="assets/logo.png" alt="속마음 번역기 로고"
+             style="max-height:min(28vh,200px); margin: auto; filter: drop-shadow(0 0 24px rgba(212,255,0,0.18));"
+             class="reveal-pop d4" />
+        <div class="meta reveal d6">
+          <span>NEXT.JS · GEMINI · POSTGRES</span>
+          <span>ICHACKERTHON</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 2 — PROBLEM ====== -->
+  <section class="slide" data-title="문제">
+    <div class="center">
+      <div class="meta reveal d1">
+        <span>02 · PROBLEM</span><span class="num">01 / 12 → 02</span>
+      </div>
+
+      <div class="body">
+        <span class="kicker reveal d2"><span class="bar"></span>가족이 서로에게 가장 못하는 말</span>
+        <h2 class="h1 reveal d3">경상도 부모는<br/><em>“사랑한다”</em>를 잘 말하지 않는다.</h2>
+        <p class="lead reveal d4">
+          “밥은 묵었나?” 한 마디 뒤에 보고 싶다는 마음이 숨어 있고,
+          “마, 됐다”의 무뚝뚝함 안에 미안함이 있다.
+          <strong>표현은 짧지만 마음은 길다</strong> — 그래서 자주 오해된다.
+        </p>
+        <ul class="bullet-list reveal d5" style="list-style:none; display:flex; flex-direction:column; gap:0.45rem; margin-top:0.4rem; max-width:60ch;">
+          <li>· 가족 간 “사랑한다” 표현 빈도, 세대 차이가 가장 큰 영역</li>
+          <li>· 사투리는 단순 발음 차이가 아니라 <strong>감정 전달의 문법</strong>이 다름</li>
+          <li>· 번역기는 단어를 옮기지만, 마음은 옮기지 못한다</li>
+        </ul>
+      </div>
+
+      <div class="meta reveal d6">
+        <span>속마음 번역기 · pitch</span><span class="num">02</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 3 — INSIGHT ====== -->
+  <section class="slide" data-title="인사이트">
+    <div class="split">
+      <div class="panel blue">
+        <div class="meta reveal d1" style="color:rgba(255,255,255,0.85);">
+          <span>03 · INSIGHT</span><span style="color:var(--accent-neon)">!</span>
+        </div>
+
+        <div class="stack">
+          <span class="kicker reveal d2"><span class="bar"></span>OUR THESIS</span>
+          <h2 class="display reveal d3" style="font-size:clamp(2rem,5.5vw,4.4rem)">
+            사투리는 <em>번역</em>이 아니라<br/><em>해석</em>이 필요하다.
+          </h2>
+        </div>
+
+        <p class="lead reveal d4" style="color:rgba(255,255,255,0.92); max-width:42ch">
+          단어 하나만 바꾸면 의미는 사라진다. 진짜 메시지는 <strong style="color:var(--accent-neon)">맥락·감정·관계</strong>에 있다.
+        </p>
+      </div>
+
+      <div class="panel" style="justify-content:center; gap:1rem;">
+        <div class="stack-tight reveal d3">
+          <span class="kicker neon"><span class="bar"></span>BAD — Word for word</span>
+          <div class="bubble ai" style="margin-top:0.4rem">밥은 묵었나? → Did you eat rice?</div>
+          <p class="lead" style="font-size:var(--small-size); opacity:0.7; margin-top:0.3rem">의미는 맞지만 마음은 사라졌다.</p>
+        </div>
+
+        <div class="stack-tight reveal d5" style="margin-top:0.8rem">
+          <span class="kicker neon"><span class="bar"></span>OURS — Meaning + emotion</span>
+          <div class="bubble ai" style="margin-top:0.4rem">밥은 묵었나? → 잘 지내? <em style="color:var(--accent-neon); font-style:normal; font-weight:700;">+ 보고 싶어 (걱정)</em></div>
+          <p class="lead" style="font-size:var(--small-size); opacity:0.85; margin-top:0.3rem; color:var(--accent-neon)">단어 + 속마음 + 감정 라벨.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 4 — SOLUTION (one-liner) ====== -->
+  <section class="slide" data-title="솔루션">
+    <div class="center">
+      <div class="meta reveal d1">
+        <span>04 · SOLUTION</span><span class="num">★</span>
+      </div>
+
+      <div class="body" style="text-align:center; align-items:center;">
+        <span class="kicker reveal d2"><span class="bar"></span>한 줄 솔루션<span class="bar"></span></span>
+        <h2 class="display reveal d3" style="text-align:center;">
+          <em>사투리 ↔ 표준어</em><br/>+ <em>속마음</em>을 동시에<br/>보여주는 AI 번역기
+        </h2>
+        <div class="pill-row reveal d4" style="justify-content:center; margin-top:0.8rem">
+          <span class="pill neon">↔ Bidirectional</span>
+          <span class="pill neon">♥ Emotion + Tip</span>
+          <span class="pill neon">↻ Context Memory</span>
+        </div>
+        <p class="lead reveal d5" style="text-align:center; margin-top:0.6rem">
+          입력 한 줄에 — <strong>번역 / 진짜 마음 / 감정 라벨 / 답하는 팁</strong> 네 가지가 1초 안에 돌아옵니다.
+        </p>
+      </div>
+
+      <div class="meta reveal d6">
+        <span>powered by gemini 2.5 flash</span><span class="num">04</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 5 — DEMO 1: 사투리 → 서울말 ====== -->
+  <section class="slide" data-title="데모1">
+    <div class="split">
+      <div class="panel" style="background:var(--bg-dark)">
+        <div class="meta reveal d1">
+          <span>05 · DEMO ①</span><span class="num">사투리 → 서울말</span>
+        </div>
+
+        <div class="stack">
+          <span class="kicker neon reveal d2"><span class="bar"></span>경상도 → 표준어 + 속마음</span>
+          <h2 class="h2 reveal d3">엄마가 보낸 한 마디.</h2>
+
+          <div class="chat reveal d4" style="margin-top:0.4rem">
+            <div class="bubble you">밥은 묵었나?</div>
+            <div class="bubble ai">
+              <span class="label">번역</span>
+              밥 먹었어?
+            </div>
+          </div>
+
+          <div class="real-card reveal d5">
+            <span class="label">속마음</span>
+            <p>잘 지내는지 걱정돼서, 보고 싶다는 뜻이야.</p>
+          </div>
+
+          <div class="tags reveal d6">
+            <span class="tag">감정 · 걱정</span>
+            <span class="tag">감정 · 그리움</span>
+            <span class="tag tip">팁 · 안부 한 줄로 답해보세요</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel blue">
+        <div class="brand reveal d1" style="color:#fff">
+          <span class="brand-dot"></span><span>POST /api/translate</span>
+        </div>
+
+        <div class="code-block reveal-pop d4" style="background:rgba(7,7,15,0.55); border-color:rgba(255,255,255,0.22); color:rgba(255,255,255,0.85)">
+<span class="com">// response</span>
+{
+  <span class="key">"translated"</span>:   <span class="str">"밥 먹었어?"</span>,
+  <span class="key">"realMeaning"</span>:  <span class="str">"잘 지내는지 걱정돼…"</span>,
+  <span class="key">"emotion"</span>:      <span class="str">"걱정 + 그리움"</span>,
+  <span class="key">"tip"</span>:          <span class="str">"안부 한 줄로 답해보세요"</span>
+}
+        </div>
+
+        <div class="meta reveal d6" style="color:rgba(255,255,255,0.85)">
+          <span>direction: satoori-to-seoul</span>
+          <span style="color:var(--accent-neon); font-weight:700">~0.9s</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 6 — DEMO 2: 서울말 → 사투리 ====== -->
+  <section class="slide" data-title="데모2">
+    <div class="split">
+      <div class="panel blue">
+        <div class="brand reveal d1" style="color:#fff">
+          <span class="brand-dot"></span><span>POST /api/translate</span>
+        </div>
+
+        <div class="code-block reveal-pop d4" style="background:rgba(7,7,15,0.55); border-color:rgba(255,255,255,0.22); color:rgba(255,255,255,0.85)">
+<span class="com">// response</span>
+{
+  <span class="key">"translated"</span>:   <span class="str">"고마우네, 어매."</span>,
+  <span class="key">"realMeaning"</span>:  <span class="str">"진짜 고마워서 표현이 짧아졌어."</span>,
+  <span class="key">"emotion"</span>:      <span class="str">"고마움 + 어색함"</span>,
+  <span class="key">"tip"</span>:          <span class="str">"짧은 사투리가 더 진심처럼 들려요"</span>
+}
+        </div>
+
+        <div class="meta reveal d6" style="color:rgba(255,255,255,0.85)">
+          <span>direction: seoul-to-satoori</span>
+          <span style="color:var(--accent-neon); font-weight:700">~0.8s</span>
+        </div>
+      </div>
+
+      <div class="panel" style="background:var(--bg-dark)">
+        <div class="meta reveal d1">
+          <span>06 · DEMO ②</span><span class="num">서울말 → 사투리</span>
+        </div>
+
+        <div class="stack">
+          <span class="kicker neon reveal d2"><span class="bar"></span>표준어 → 사투리 + 어투 해설</span>
+          <h2 class="h2 reveal d3">자식이 마음을 표현할 차례.</h2>
+
+          <div class="chat reveal d4" style="margin-top:0.4rem">
+            <div class="bubble you">엄마한테 고맙다고 말하고 싶어</div>
+            <div class="bubble ai">
+              <span class="label">번역</span>
+              고마우네, 어매.
+            </div>
+          </div>
+
+          <div class="real-card reveal d5">
+            <span class="label">왜 이 표현?</span>
+            <p>경상도 어른이 자주 쓰는 어투. 짧고 무뚝뚝해서 오히려 진심처럼 들려요.</p>
+          </div>
+
+          <div class="tags reveal d6">
+            <span class="tag">감정 · 고마움</span>
+            <span class="tag tip">팁 · 첫 마디는 짧게 던지기</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 7 — KEY FEATURES (3 cards) ====== -->
+  <section class="slide" data-title="핵심기능">
+    <div class="center">
+      <div class="meta reveal d1">
+        <span>07 · CORE FEATURES</span><span class="num">3</span>
+      </div>
+
+      <div class="body" style="gap:1.4rem">
+        <div class="stack" style="gap:0.4rem">
+          <span class="kicker reveal d2"><span class="bar"></span>What ships today</span>
+          <h2 class="h1 reveal d3">번역기를 넘어, <em>해석기</em>로.</h2>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card reveal d4">
+            <span class="num">01</span>
+            <h3>양방향 번역</h3>
+            <p>경상도 ↔ 표준어. 한 번의 토글로 방향 전환. 짧은 한 줄도 전체 문맥도 OK.</p>
+          </article>
+          <article class="feature-card reveal d5">
+            <span class="num">02</span>
+            <h3>속마음 · 감정 해석</h3>
+            <p>화자의 진짜 마음을 1~2문장으로. 감정 라벨과 “이렇게 답해보세요” 팁까지.</p>
+          </article>
+          <article class="feature-card reveal d6">
+            <span class="num">03</span>
+            <h3>대화 맥락 기억</h3>
+            <p>익명 세션 + 스레드 단위 채팅 저장. 다음 메시지를 더 정확하게 해석.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="meta reveal d7">
+        <span>속마음 번역기</span><span class="num">07</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 8 — TECH STACK ====== -->
+  <section class="slide" data-title="기술스택">
+    <div class="center">
+      <div class="meta reveal d1">
+        <span>08 · TECH STACK</span><span class="num">★</span>
+      </div>
+
+      <div class="body" style="gap:1.2rem">
+        <span class="kicker reveal d2"><span class="bar"></span>Built with — single repo, zero infra magic</span>
+        <h2 class="h1 reveal d3">필요한 만큼만, <em>제대로</em>.</h2>
+
+        <div class="grid reveal d4" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr)); gap:0.8rem">
+          <div class="feature-card" style="min-height:auto">
+            <span class="num">FE</span>
+            <h3>Next.js 14</h3>
+            <p>App Router · 서버 라우트 · shadcn/ui · Tailwind. 단일 코드베이스로 클라/서버.</p>
+          </div>
+          <div class="feature-card" style="min-height:auto">
+            <span class="num">AI</span>
+            <h3>Gemini 2.5 Flash</h3>
+            <p>한국어 강한 멀티모달 LLM. JSON 응답 모드 + 안전 파서로 안정성 확보.</p>
+          </div>
+          <div class="feature-card" style="min-height:auto">
+            <span class="num">DB</span>
+            <h3>Postgres + pgvector</h3>
+            <p>Prisma 스키마. AnonymousSession → ChatThread → ChatMessage 3계층.</p>
+          </div>
+          <div class="feature-card" style="min-height:auto">
+            <span class="num">Ops</span>
+            <h3>Docker · Vercel</h3>
+            <p>로컬은 Docker Compose로 pgvector 띄우고, 배포는 Vercel 한 번에.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta reveal d6">
+        <span>nextjs · gemini · prisma · postgres · pgvector</span><span class="num">08</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 9 — ARCHITECTURE ====== -->
+  <section class="slide" data-title="아키텍처">
+    <div class="center">
+      <div class="meta reveal d1">
+        <span>09 · ARCHITECTURE</span><span class="num">flow</span>
+      </div>
+
+      <div class="body" style="gap:1.4rem">
+        <div class="stack" style="gap:0.4rem">
+          <span class="kicker reveal d2"><span class="bar"></span>End-to-end in 4 hops</span>
+          <h2 class="h1 reveal d3">한 메시지가 흘러가는 길.</h2>
+        </div>
+
+        <div class="arch reveal d4">
+          <div class="arch-node">
+            <span class="who">CLIENT</span>
+            <span class="what">TranslatorChat</span>
+            <span class="how">React 컴포넌트<br/>방향 토글 · 입력 · 표시</span>
+          </div>
+          <div class="arch-node">
+            <span class="who">EDGE</span>
+            <span class="what">/api/translate</span>
+            <span class="how">Node 런타임<br/>direction · history 검증</span>
+          </div>
+          <div class="arch-node">
+            <span class="who">LLM</span>
+            <span class="what">Gemini 2.5 Flash</span>
+            <span class="how">JSON 응답 모드<br/>한국어 시스템 프롬프트</span>
+          </div>
+          <div class="arch-node">
+            <span class="who">STORE</span>
+            <span class="what">Postgres (Prisma)</span>
+            <span class="how">세션 · 스레드 · 메시지<br/>다음 요청에 history로 첨부</span>
+          </div>
+        </div>
+
+        <p class="lead reveal d6" style="margin-top:0.4rem">
+          <strong>비밀 소스</strong>는 프롬프트 — 경상도 특유의 “무뚝뚝함 뒤의 따뜻함”을 명시적으로 학습 지시.
+          모델이 코드펜스를 씌워도 살아남는 <strong>방어형 JSON 파서</strong>.
+        </p>
+      </div>
+
+      <div class="meta reveal d7">
+        <span>flow · client → api → llm → db</span><span class="num">09</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 10 — DIFFERENTIATION ====== -->
+  <section class="slide" data-title="차별점">
+    <div class="center">
+      <div class="meta reveal d1">
+        <span>10 · WHY US</span><span class="num">vs</span>
+      </div>
+
+      <div class="body" style="gap:1.2rem">
+        <div class="stack" style="gap:0.4rem">
+          <span class="kicker reveal d2"><span class="bar"></span>Sounds similar — actually different</span>
+          <h2 class="h1 reveal d3">사전 번역기 ≠ <em>속마음 번역기</em></h2>
+        </div>
+
+        <div class="compare">
+          <div class="col them reveal d4">
+            <h3>일반 사투리 사전 / 번역기</h3>
+            <ul>
+              <li>단어 1:1 대응 — “묵다 = 먹다”</li>
+              <li>맥락·감정 정보 없음</li>
+              <li>이전 대화 기억 못 함</li>
+              <li>“진심”은 사용자가 추측</li>
+            </ul>
+          </div>
+          <div class="col us reveal d5">
+            <h3>속마음 번역기</h3>
+            <ul>
+              <li>번역 + <strong>realMeaning + emotion + tip</strong></li>
+              <li>경상도 특유의 어투 패턴 학습 프롬프트</li>
+              <li>세션 기반 대화 맥락 유지 (180일)</li>
+              <li>“이렇게 답해보세요” 액션 제시</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta reveal d6">
+        <span>moat = prompt + context + emotion model</span><span class="num">10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 11 — VISION / ROADMAP ====== -->
+  <section class="slide" data-title="확장">
+    <div class="center">
+      <div class="meta reveal d1">
+        <span>11 · ROADMAP</span><span class="num">next</span>
+      </div>
+
+      <div class="body" style="gap:1.4rem">
+        <div class="stack" style="gap:0.4rem">
+          <span class="kicker reveal d2"><span class="bar"></span>From dialect to dialogue</span>
+          <h2 class="h1 reveal d3">다음은 — <em>가족 전체</em>의 번역기.</h2>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card reveal d4">
+            <span class="num">→</span>
+            <h3>다른 방언 확장</h3>
+            <p>전라 · 제주 · 충청. 같은 프롬프트 패턴을 지역별로 튜닝.</p>
+          </article>
+          <article class="feature-card reveal d5">
+            <span class="num">♪</span>
+            <h3>음성 입력</h3>
+            <p>STT로 부모님 음성을 그대로 받아서 “마음”까지 옮김.</p>
+          </article>
+          <article class="feature-card reveal d6">
+            <span class="num">♥</span>
+            <h3>가족 공유 스레드</h3>
+            <p>한 대화방에 여러 가족이 들어와 서로의 메시지를 해석.</p>
+          </article>
+        </div>
+
+        <p class="lead reveal d7" style="margin-top:0.4rem">
+          궁극의 목표 — <strong>“사랑한다”라고 말하지 않아도 사랑이 전해지는 채팅앱</strong>.
+        </p>
+      </div>
+
+      <div class="meta reveal d8">
+        <span>roadmap · q3 — q4 2026</span><span class="num">11</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDE 12 — CLOSING / CTA ====== -->
+  <section class="slide" data-title="마무리">
+    <div class="split">
+      <div class="panel blue">
+        <div class="brand reveal d1">
+          <span class="brand-dot"></span>
+          <span>속마음 번역기 · thank you</span>
+        </div>
+
+        <div class="stack">
+          <span class="kicker reveal d2"><span class="bar"></span>Closing</span>
+          <h1 class="display reveal d3">마음을 옮기는<br/><em>가장 짧은 거리.</em></h1>
+          <p class="lead reveal d4" style="max-width:42ch">
+            “사랑한다” 한 마디가 어렵다면, 우리가 대신 옮겨줄게요.
+            <strong>해커톤 데모, 오늘부터 만져보세요.</strong>
+          </p>
+        </div>
+
+        <span class="badge reveal d5">▶ Try the live demo</span>
+      </div>
+
+      <div class="panel" style="justify-content:space-between">
+        <div class="meta reveal d2">
+          <span>12 · CTA</span><span class="num">12 / 12</span>
+        </div>
+
+        <div class="cta-box reveal-pop d4">
+          <span class="cta-label">live demo</span>
+          <span class="cta-url">localhost:3000</span>
+          <span class="cta-note">또는 배포 후 발표 시 QR로 교체 — 우상단 “Export” 클릭으로 수정 가능</span>
+        </div>
+
+        <img src="assets/logo.png" alt="속마음 번역기 로고"
+             style="max-height:min(20vh,140px); margin: auto; filter: drop-shadow(0 0 24px rgba(212,255,0,0.18));"
+             class="reveal-pop d5" />
+
+        <div class="meta reveal d6">
+          <span>made with ❤ at ichackerthon</span><span class="num">END</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <span class="keyboard-hint">← / → · SPACE · SCROLL · E to edit</span>
+
+  <script>
+    /* ============================================================
+       SLIDE PRESENTATION CONTROLLER
+       - IntersectionObserver triggers .visible class on each slide
+         (drives the .reveal entrance animations).
+       - Keyboard, wheel, and touch nav.
+       - Progress bar + nav dots stay in sync with the active slide.
+       ============================================================ */
+    class SlidePresentation {
+      constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.current = 0;
+        this.scrolling = false;
+        this.progressBar = document.getElementById('progressBar');
+        this.navDotsContainer = document.getElementById('navDots');
+
+        this.setupNavDots();
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupWheelNav();
+        this.setupTouchNav();
+        this.updateProgress();
+      }
+
+      // Build dot for each slide. Always clear first (avoids duplicates if
+      // outerHTML was captured while dots were already rendered).
+      setupNavDots() {
+        this.navDotsContainer.innerHTML = '';
+        this.slides.forEach((slide, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.setAttribute('aria-label', `Go to slide ${idx + 1}: ${slide.dataset.title || ''}`);
+          if (idx === 0) btn.classList.add('active');
+          btn.addEventListener('click', () => this.goTo(idx));
+          this.navDotsContainer.appendChild(btn);
+        });
+      }
+
+      setupIntersectionObserver() {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+              entry.target.classList.add('visible');
+              const idx = this.slides.indexOf(entry.target);
+              if (idx >= 0) {
+                this.current = idx;
+                this.updateDots();
+                this.updateProgress();
+              }
+            }
+          });
+        }, { threshold: [0.5, 0.85] });
+        this.slides.forEach((s) => io.observe(s));
+        // First slide should reveal immediately on load (IO can lag).
+        requestAnimationFrame(() => this.slides[0]?.classList.add('visible'));
+      }
+
+      setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+          // Don't hijack keys while editing text.
+          if (e.target.getAttribute('contenteditable') === 'true') return;
+          if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+            e.preventDefault(); this.goTo(this.current + 1);
+          } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            e.preventDefault(); this.goTo(this.current - 1);
+          } else if (e.key === 'Home') {
+            e.preventDefault(); this.goTo(0);
+          } else if (e.key === 'End') {
+            e.preventDefault(); this.goTo(this.slides.length - 1);
+          }
+        });
+      }
+
+      setupWheelNav() {
+        let lock = false;
+        window.addEventListener('wheel', (e) => {
+          if (lock) return;
+          if (Math.abs(e.deltaY) < 30) return;
+          lock = true;
+          this.goTo(this.current + (e.deltaY > 0 ? 1 : -1));
+          setTimeout(() => { lock = false; }, 700);
+        }, { passive: true });
+      }
+
+      setupTouchNav() {
+        let startY = 0;
+        window.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+        window.addEventListener('touchend', (e) => {
+          const dy = startY - e.changedTouches[0].clientY;
+          if (Math.abs(dy) < 50) return;
+          this.goTo(this.current + (dy > 0 ? 1 : -1));
+        }, { passive: true });
+      }
+
+      goTo(idx) {
+        const clamped = Math.max(0, Math.min(this.slides.length - 1, idx));
+        this.slides[clamped].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      updateDots() {
+        const dots = this.navDotsContainer.querySelectorAll('button');
+        dots.forEach((d, i) => d.classList.toggle('active', i === this.current));
+      }
+
+      updateProgress() {
+        const pct = ((this.current + 1) / this.slides.length) * 100;
+        this.progressBar.style.width = `${pct}%`;
+      }
+    }
+
+    /* ============================================================
+       INLINE EDITOR
+       - E key or top-left hotzone enters edit mode.
+       - All headings/paragraphs/spans become contenteditable.
+       - Auto-save to localStorage every 2s while editing.
+       - Ctrl+S exports a clean HTML file (strips edit state first).
+       ============================================================ */
+    class InlineEditor {
+      constructor() {
+        this.isActive = false;
+        this.STORAGE_KEY = 'sokmaeum-deck-content-v1';
+        this.toggleBtn = document.getElementById('editToggle');
+        this.banner = document.getElementById('editBanner');
+        this.exportBtn = document.getElementById('editExport');
+        this.hotzone = document.getElementById('editHotzone');
+
+        // Selector covers all visible text we want editable.
+        this.editableSelector = [
+          '.display', '.h1', '.h2', '.lead', '.kicker',
+          '.feature-card h3', '.feature-card p', '.feature-card .num',
+          '.bubble', '.real-card p', '.real-card .label',
+          '.tag', '.pill', '.badge',
+          '.arch-node .who', '.arch-node .what', '.arch-node .how',
+          '.compare h3', '.compare li',
+          '.cta-box .cta-label', '.cta-box .cta-url', '.cta-box .cta-note',
+          '.brand span', '.meta span', '.code-block'
+        ].join(', ');
+
+        this.restore();
+        this.bindUI();
+        this.startAutosave();
+      }
+
+      bindUI() {
+        // Toggle button click
+        this.toggleBtn.addEventListener('click', () => this.toggle());
+        // Banner export button
+        this.exportBtn.addEventListener('click', () => this.exportFile());
+
+        // Top-left hotzone hover with grace period (button has pointer-events:none
+        // when hidden, so CSS-only hover would break the chain).
+        let hideTimeout = null;
+        const showSoon = () => { clearTimeout(hideTimeout); this.toggleBtn.classList.add('show'); };
+        const hideSoon = () => {
+          hideTimeout = setTimeout(() => {
+            if (!this.isActive) this.toggleBtn.classList.remove('show');
+          }, 400);
+        };
+        this.hotzone.addEventListener('mouseenter', showSoon);
+        this.hotzone.addEventListener('mouseleave', hideSoon);
+        this.toggleBtn.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+        this.toggleBtn.addEventListener('mouseleave', hideSoon);
+        this.hotzone.addEventListener('click', () => this.toggle());
+
+        // E key (skip when actually editing text)
+        document.addEventListener('keydown', (e) => {
+          if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) {
+            this.toggle();
+          }
+          // Ctrl/Cmd+S → export
+          if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+            if (this.isActive) {
+              e.preventDefault();
+              this.exportFile();
+            }
+          }
+        });
+      }
+
+      toggle() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('edit-active', this.isActive);
+        this.toggleBtn.classList.toggle('active', this.isActive);
+        this.banner.classList.toggle('active', this.isActive);
+        this.toggleBtn.classList.toggle('show', this.isActive);
+        this.toggleBtn.textContent = this.isActive ? '✓' : '✏️';
+
+        document.querySelectorAll(this.editableSelector).forEach((el) => {
+          if (this.isActive) {
+            el.setAttribute('contenteditable', 'true');
+            el.setAttribute('spellcheck', 'false');
+          } else {
+            el.removeAttribute('contenteditable');
+            el.removeAttribute('spellcheck');
+          }
+        });
+
+        if (!this.isActive) this.save();
+      }
+
+      // Save the current text content of every editable element by stable index.
+      save() {
+        const data = {};
+        document.querySelectorAll(this.editableSelector).forEach((el, idx) => {
+          data[idx] = el.innerHTML;
+        });
+        try {
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+        } catch (_) { /* quota / privacy mode — silent */ }
+      }
+
+      // On load, restore any previous edits.
+      restore() {
+        try {
+          const raw = localStorage.getItem(this.STORAGE_KEY);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+          document.querySelectorAll(this.editableSelector).forEach((el, idx) => {
+            if (data[idx] !== undefined) el.innerHTML = data[idx];
+          });
+        } catch (_) { /* corrupted — ignore */ }
+      }
+
+      startAutosave() {
+        // Autosave every 2s while editing.
+        setInterval(() => { if (this.isActive) this.save(); }, 2000);
+      }
+
+      // Export clean HTML — strip edit state before capturing outerHTML so the
+      // saved file opens normally instead of stuck in edit mode.
+      exportFile() {
+        const editableEls = Array.from(document.querySelectorAll('[contenteditable]'));
+        editableEls.forEach((el) => el.removeAttribute('contenteditable'));
+        document.body.classList.remove('edit-active');
+        this.toggleBtn.classList.remove('active', 'show');
+        this.banner.classList.remove('active', 'show');
+        const wasActiveText = this.toggleBtn.textContent;
+        this.toggleBtn.textContent = '✏️';
+
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+        // Restore edit state so the user can keep editing.
+        document.body.classList.add('edit-active');
+        editableEls.forEach((el) => el.setAttribute('contenteditable', 'true'));
+        this.toggleBtn.classList.add('active', 'show');
+        this.banner.classList.add('active');
+        this.toggleBtn.textContent = wasActiveText;
+
+        const blob = new Blob([html], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'sokmaeum-pitch-deck.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+    }
+
+    // Boot
+    new SlidePresentation();
+    new InlineEditor();
+  </script>
+</body>
+</html>

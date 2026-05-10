@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "속마음 번역기 — 경상도 ↔ 서울말",
+  title: "경상어 번역기 — 경상도 ↔ 서울말",
   description:
     "무뚝뚝한 경상도 표현 뒤에 숨겨진 진짜 마음을 알려드립니다. 가정의 달, 가족에게 닿는 한마디.",
 };
